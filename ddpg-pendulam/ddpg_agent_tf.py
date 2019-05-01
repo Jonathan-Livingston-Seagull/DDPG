@@ -34,12 +34,12 @@ class Agent():
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(action_size)
         self.actor_target = Actor(action_size)
-        self.actor_optimizer = tf.train.AdamOptimizer(learning_rate=LR_ACTOR)
+        self.actor_optimizer = tf.keras.optimizers.Adam(learning_rate=LR_ACTOR)
 
         # Critic Network (w/ Target Network)
         self.critic_local = Critic()
         self.critic_target = Critic()
-        self.critic_optimizer = tf.train.AdamOptimizer(learning_rate=LR_CRITIC)
+        self.critic_optimizer = tf.keras.optimizers.Adam(learning_rate=LR_CRITIC)
 
         # Noise process
         self.noise = OUNoise(action_size, random_seed)
@@ -86,7 +86,7 @@ class Agent():
         # ---------------------------- update actor ---------------------------- #
         # Compute actor loss
         actions_pred = self.actor_local(states)
-        return  -tf.reduce_mean(self.critic_local(states, actions_pred))
+        return -tf.reduce_mean(self.critic_local(states, actions_pred))
 
     def learn(self, experiences, gamma):
         """Update policy and value parameters using given batch of experience tuples.
@@ -100,9 +100,12 @@ class Agent():
             experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples
             gamma (float): discount factor
         """
+        trainable_variables_critic = self.critic_local.trainable_variables + self.actor_target.trainable_variables +  \
+                              self.critic_target.trainable_variables
+        trainable_variables_actor = self.critic_local.trainable_variables + self.actor_local.trainable_variables
 
-        self.critic_optimizer.minimize(lambda: self.critic_loss(experiences, gamma))
-        self.actor_optimizer.minimize(lambda: self.actor_loss(experiences))
+        self.critic_optimizer.minimize(lambda: self.critic_loss(experiences, gamma), trainable_variables_critic)
+        self.actor_optimizer.minimize(lambda: self.actor_loss(experiences), trainable_variables_actor)
         # ----------------------- update target networks ----------------------- #
         self.soft_update(self.critic_local, self.critic_target, TAU)
         self.soft_update(self.actor_local, self.actor_target, TAU)

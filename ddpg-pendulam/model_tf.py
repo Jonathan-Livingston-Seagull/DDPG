@@ -13,9 +13,9 @@ class Actor(tf.keras.Model):
             fc2_units (int): Number of nodes in second hidden layer
         """
         super(Actor, self).__init__()
-        self.fc1 = tf.layers.Dense(units=fc1_units, activation=tf.nn.relu)
-        self.fc2 = tf.layers.Dense(units=fc2_units, activation=tf.nn.relu)
-        self.fc3 = tf.layers.Dense(action_size, activation=tf.nn.tanh)
+        self.fc1 = tf.keras.layers.Dense(units=fc1_units, activation=tf.nn.relu)
+        self.fc2 = tf.keras.layers.Dense(units=fc2_units, activation=tf.nn.relu)
+        self.fc3 = tf.keras.layers.Dense(action_size, activation=tf.nn.tanh)
 
     def call(self, state):
         """Build an actor (policy) network that maps states -> actions."""
@@ -34,9 +34,9 @@ class Critic(tf.keras.Model):
             fc2_units (int): Number of nodes in the second hidden layer
         """
         super(Critic, self).__init__()
-        self.fcs1 = tf.layers.Dense(fcs1_units, activation=tf.nn.relu)
-        self.fc2 = tf.layers.Dense(fc2_units, activation=tf.nn.relu)
-        self.fc3 = tf.layers.Dense(1)
+        self.fcs1 = tf.keras.layers.Dense(fcs1_units, activation=tf.nn.relu)
+        self.fc2 = tf.keras.layers.Dense(fc2_units, activation=tf.nn.relu)
+        self.fc3 = tf.keras.layers.Dense(1)
 
     def call(self, state, action):
         """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
